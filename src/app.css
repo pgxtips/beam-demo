@@ -1,0 +1,33 @@
+html, body{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+#root{
+    height: 100%;
+    width: 100%;
+}
+
+:root {
+  --navbar-height: 60px;
+}
+
+.navbar {
+  height: var(--navbar-height) !important;
+}
+
+.scrollContainer {
+  height: calc(100vh - var(--navbar-height));
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  margin-top: var(--navbar-height);
+}
+
+.scrollContainer > * {
+  height: 100%;
+  scroll-snap-align: start;
+  margin-bottom: 20px;
+}
