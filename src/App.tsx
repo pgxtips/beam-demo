@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
+import Cookies from "js-cookie";
 
 import './app.css'
 import VideoFrame from './videoFrame.tsx'
 import Navbar from './navbar.tsx'
+import StartSessionModal from './startSessionModal.tsx'
 
 function App() {
+
+    const [sessionId, setSessionId] = useState<string | null>(Cookies.get("session_id") ?? null)
+
     const initialVideos = [
       "ed-n9qytdQ0",
       "3JZ_D3ELwOQ",
@@ -28,13 +33,17 @@ function App() {
             return () => el?.removeEventListener('scroll', handleScroll)
     }, [])
 
+    if (!sessionId) {
+        return <StartSessionModal onSessionStart={setSessionId} />
+    }
+
     return (
     <>
-        <Navbar sessionId="aslkdfjals"/>
+        <Navbar sessionId={sessionId}/>
         <div className="scrollContainer" ref={containerRef}>
             {videoIds.map((id, index) => (
                 <div className="videoFrameWrapper" key={index}>
-                <VideoFrame videoID={id} />
+                <VideoFrame videoID={id} sessionId={sessionId} />
                 </div>
             ))}
         </div>

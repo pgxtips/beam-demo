@@ -2,15 +2,18 @@ import { faThumbsDown, faThumbsUp, faVolumeHigh, faVolumeMute } from "@fortaweso
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactPlayer from "react-player/youtube";
 
+const env_endpoint = import.meta.env.VITE_BEAM_ENDPOINT;
+
 import './videoFrame.css'
 import { useEffect, useRef, useState } from "react";
 
 type VideoFrameProps = {
     videoID: string
-
+    sessionId: string
 }
 
 function VideoFrame(props: VideoFrameProps){
+
     const [muted, setMuted] = useState(true)
     const [liked, setLiked] = useState(false);
     const [disliked, setDisliked] = useState(false);
@@ -51,13 +54,35 @@ function VideoFrame(props: VideoFrameProps){
         setMuted(prev => !prev)
     }
 
-    const toggleLike = () => {
+    const toggleLike = async () => {
         setLiked(prev => !prev);
         if (disliked) setDisliked(false); 
+
+        const formData = new FormData()
+        formData.append("session_id", props.sessionId)
+        formData.append("content_id", "con_id")
+
+        const endpoint = env_endpoint + "/external/like"
+        const res = await fetch(endpoint, { method: "POST", body: formData });
+        const data = await res.json();
+
+        console.log("like res data: ")
+        console.log(data)
     }
 
-    const toggleDislike = () => {
+    const toggleDislike = async () => {
         setDisliked(prev => !prev);
+
+        const formData = new FormData()
+        formData.append("session_id", props.sessionId)
+        formData.append("content_id", "con_id")
+
+        const endpoint = env_endpoint + "/external/dislike"
+        const res = await fetch(endpoint, { method: "POST", body: formData});
+        const data = await res.json();
+
+        console.log("like res data: ")
+        console.log(data)
         if (liked) setLiked(false);
     }
 
