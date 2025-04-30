@@ -30,20 +30,43 @@ function App() {
 
     const { sessionId, setSessionId } = useSession();
     const [videoIds, setVideoIds] = useState<string[]>([]);
+    const [loading, setLoading] = useState(false);
+
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const handleScroll = () => {
+    const handleScroll = async () => {
         const el = containerRef.current;
-        if (el && el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
-            setVideoIds(prev => [...prev, ...prev]); // Just duplicating for now
+        if (!el || loading) return;
+
+        const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 100;
+        if (nearBottom) {
+            setLoading(true);
+            try {
+                const data = await getRecommendation(sessionId);
+                setVideoIds(prev => [...prev, ...data.recommendations]); // append, not replace
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
     useEffect(() => {
         const el = containerRef.current;
-        if (el) el.addEventListener('scroll', handleScroll);
-        return () => el?.removeEventListener('scroll', handleScroll);
-    }, []);
+        if (!el) return;
+
+        let timeout: number; // ✅ Use number, not NodeJS.Timeout
+
+        const debouncedHandleScroll = () => {
+            clearTimeout(timeout);
+            timeout = window.setTimeout(() => {
+                handleScroll();
+            }, 150);
+        };
+
+        el.addEventListener('scroll', debouncedHandleScroll);
+        return () => el.removeEventListener('scroll', debouncedHandleScroll);
+    }, [loading, sessionId]);
+
 
     useEffect(() => {
         if (!sessionId) return;
