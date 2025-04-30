@@ -1,5 +1,8 @@
 // src/StartSessionModal.tsx
 import Cookies from "js-cookie";
+import Navbar from "./navbar";
+
+import './startSessionModal.css'
 
 
 type StartSessionModalProps = {
@@ -32,13 +35,15 @@ function StartSessionModal({ onSessionStart }: StartSessionModalProps) {
   };
 
   return (
+  <>
+    <Navbar sessionId=""/>
     <div className="modalOverlay">
       <div className="modalContent">
         <h2>Start your session</h2>
         <button onClick={startSession}>Start</button>
       </div>
     </div>
-  );
+  </>);
 }
 
 export default StartSessionModal;
