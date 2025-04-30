@@ -6,50 +6,50 @@ import Navbar from './navbar.tsx'
 import StartSessionModal from './startSessionModal.tsx'
 import { useSession } from './context/sessionContext.tsx';
 
-async function getRecommendation(sessionId) {
-    try {
-        const env_endpoint = import.meta.env.VITE_BEAM_ENDPOINT;
-        const endpoint = env_endpoint + "/external/recommend"
-
-        const formData = new FormData()
-        formData.append("session_id", sessionId)
-        const res = await fetch(endpoint, { method: "POST", body: formData });
-        const data = await res.json();
-
-        console.log(data)
-
-    } catch (err) {
-        console.error("Error starting session:", err);
-    }
+type recommendationData = {
+    status: string
+    recommendations: string[]
 }
+
+async function getRecommendation(sessionId: string) {
+    const env_endpoint = import.meta.env.VITE_BEAM_ENDPOINT;
+    const endpoint = env_endpoint + "/external/recommend";
+
+    const formData = new FormData();
+    formData.append("session_id", sessionId);
+
+    const req = await fetch(endpoint, { method: "POST", body: formData })
+    const data: recommendationData = await req.json() 
+
+    return data
+}
+
 window.getRecommendation = getRecommendation;
 
 function App() {
+
     const { sessionId, setSessionId } = useSession();
-
-    const initialVideos = [
-      "ed-n9qytdQ0",
-      "3JZ_D3ELwOQ",
-      "ltrMfT4Qz5Y",
-      "M7lc1UVf-VE",
-    ]
-
-    const [videoIds, setVideoIds] = useState(initialVideos)
-    const containerRef = useRef<HTMLDivElement>(null)
+    const [videoIds, setVideoIds] = useState<string[]>([]);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const handleScroll = () => {
-        const el = containerRef.current
+        const el = containerRef.current;
         if (el && el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
-            setVideoIds(prev => [...prev, ...initialVideos]) // Append more
+            setVideoIds(prev => [...prev, ...prev]); // Just duplicating for now
         }
-    }
-
+    };
 
     useEffect(() => {
-        const el = containerRef.current
-        if (el) el.addEventListener('scroll', handleScroll)
-            return () => el?.removeEventListener('scroll', handleScroll)
-    }, [])
+        const el = containerRef.current;
+        if (el) el.addEventListener('scroll', handleScroll);
+        return () => el?.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => {
+        if (!sessionId) return;
+        getRecommendation(sessionId).then((data) => {setVideoIds(data.recommendations)})
+    }, [sessionId]);
+
 
     if (!sessionId) {
         return <StartSessionModal onSessionStart={setSessionId} />
