@@ -18,7 +18,6 @@ function VideoFrame(props: VideoFrameProps){
     const [liked, setLiked] = useState(false);
     const [disliked, setDisliked] = useState(false);
 
-
     const playerRef = useRef<ReactPlayer | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isInViewport, setIsInViewport] = useState(true);

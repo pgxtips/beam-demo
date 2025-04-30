@@ -31,10 +31,14 @@ function App() {
     const { sessionId, setSessionId } = useSession();
     const [videoIds, setVideoIds] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
+    const initialLoadDone = useRef(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
 
     const handleScroll = async () => {
+
+        if (!initialLoadDone.current) return;
+
         const el = containerRef.current;
         if (!el || loading) return;
 
@@ -69,8 +73,14 @@ function App() {
 
 
     useEffect(() => {
-        if (!sessionId) return;
-        getRecommendation(sessionId).then((data) => {setVideoIds(data.recommendations)})
+
+        if (!sessionId || initialLoadDone.current) return;
+
+        {
+            getRecommendation(sessionId).then((data) => {setVideoIds(data.recommendations)})
+            initialLoadDone.current = true;
+        }
+
     }, [sessionId]);
 
 
