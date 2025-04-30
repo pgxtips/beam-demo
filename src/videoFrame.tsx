@@ -96,10 +96,10 @@ function VideoFrame(props: VideoFrameProps){
                     muted={muted}
                     controls={false}
                     config={{
-                        playerVars: { controls:0, modestbranding: 1 }
+                        playerVars: { controls:0, modestbranding: 1, rel: 0 }
                     }}
                     playsinline={true}
-                    url={"https://www.youtube.com/watch?v="+props.videoID}
+                    url={"https://www.youtube.com/embed/"+props.videoID}
                 />
             </div>
             <div className="controlsSect">
