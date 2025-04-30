@@ -1,14 +1,31 @@
 import { useEffect, useRef, useState } from 'react'
-import Cookies from "js-cookie";
 
 import './app.css'
 import VideoFrame from './videoFrame.tsx'
 import Navbar from './navbar.tsx'
 import StartSessionModal from './startSessionModal.tsx'
+import { useSession } from './context/sessionContext.tsx';
+
+async function getRecommendation(sessionId) {
+    try {
+        const env_endpoint = import.meta.env.VITE_BEAM_ENDPOINT;
+        const endpoint = env_endpoint + "/external/recommend"
+
+        const formData = new FormData()
+        formData.append("session_id", sessionId)
+        const res = await fetch(endpoint, { method: "POST", body: formData });
+        const data = await res.json();
+
+        console.log(data)
+
+    } catch (err) {
+        console.error("Error starting session:", err);
+    }
+}
+window.getRecommendation = getRecommendation;
 
 function App() {
-
-    const [sessionId, setSessionId] = useState<string | null>(Cookies.get("session_id") ?? null)
+    const { sessionId, setSessionId } = useSession();
 
     const initialVideos = [
       "ed-n9qytdQ0",
@@ -26,6 +43,7 @@ function App() {
             setVideoIds(prev => [...prev, ...initialVideos]) // Append more
         }
     }
+
 
     useEffect(() => {
         const el = containerRef.current
