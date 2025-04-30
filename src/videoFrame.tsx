@@ -60,7 +60,7 @@ function VideoFrame(props: VideoFrameProps){
 
         const formData = new FormData()
         formData.append("session_id", props.sessionId)
-        formData.append("content_id", "con_id")
+        formData.append("content_id", props.videoID)
 
         const endpoint = env_endpoint + "/external/like"
         const res = await fetch(endpoint, { method: "POST", body: formData });
@@ -75,7 +75,7 @@ function VideoFrame(props: VideoFrameProps){
 
         const formData = new FormData()
         formData.append("session_id", props.sessionId)
-        formData.append("content_id", "con_id")
+        formData.append("content_id", props.videoID)
 
         const endpoint = env_endpoint + "/external/dislike"
         const res = await fetch(endpoint, { method: "POST", body: formData});
