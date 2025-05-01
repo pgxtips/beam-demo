@@ -1,8 +1,8 @@
 // src/StartSessionModal.tsx
 import Cookies from "js-cookie";
-import Navbar from "./navbar";
+import Navbar from "@/components/navbar.tsx";
 
-import './startSessionModal.css'
+import '@/styles/startSessionModal.css'
 
 
 type StartSessionModalProps = {

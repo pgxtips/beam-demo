@@ -1,5 +1,5 @@
 // Navbar.tsx
-import './navbar.css'
+import '@/styles/navbar.css'
 
 type NavbarProps = {
   sessionId: string

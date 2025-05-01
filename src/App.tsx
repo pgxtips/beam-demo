@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 
-import './app.css'
-import VideoFrame from './videoFrame.tsx'
-import Navbar from './navbar.tsx'
-import StartSessionModal from './startSessionModal.tsx'
-import { useSession } from './context/sessionContext.tsx';
+import '@/styles/app.css'
+import VideoFrame from '@/components/videoFrame.tsx'
+import Navbar from '@/components/navbar.tsx'
+import StartSessionModal from '@/components/startSessionModal.tsx'
+import { useSession } from '@/context/sessionContext.tsx';
 
 type recommendationData = {
     status: string

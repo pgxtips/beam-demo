@@ -4,7 +4,8 @@ import ReactPlayer from "react-player/youtube";
 
 const env_endpoint = import.meta.env.VITE_BEAM_ENDPOINT;
 
-import './videoFrame.css'
+import '@/styles/videoFrame.css'
+
 import { useEffect, useRef, useState } from "react";
 
 type VideoFrameProps = {
