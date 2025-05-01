@@ -3,62 +3,55 @@ import { useEffect, useRef, useState } from 'react'
 import '@/styles/app.css'
 import VideoFrame from '@/components/videoFrame.tsx'
 import Navbar from '@/components/navbar.tsx'
+
 import StartSessionModal from '@/components/startSessionModal.tsx'
+import PreferenceModal from '@/components/preferencesModal.tsx'
+
 import { useSession } from '@/context/sessionContext.tsx';
 
-type recommendationData = {
-    status: string
-    recommendations: string[]
-}
-
-async function getRecommendation(sessionId: string) {
-    const env_endpoint = import.meta.env.VITE_BEAM_ENDPOINT;
-    const endpoint = env_endpoint + "/external/recommend";
-
-    const formData = new FormData();
-    formData.append("session_id", sessionId);
-
-    const req = await fetch(endpoint, { method: "POST", body: formData })
-    const data: recommendationData = await req.json() 
-
-    return data
-}
-
-window.getRecommendation = getRecommendation;
+import recommend from "@/models/recommend.ts"
 
 function App() {
 
-    const { sessionId, setSessionId } = useSession();
+    const { sessionId, setSessionId, preferences, setPreferences } = useSession();
     const [videoIds, setVideoIds] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const initialLoadDone = useRef(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const handleScroll = async () => {
+    /* -------------------------
+          HELPER FUNCTIONS
+    ------------------------- */
 
-        if (!initialLoadDone.current) return;
+    const handleScroll = async () => {
+        if (!initialLoadDone.current || !sessionId || !preferences ) return;
 
         const el = containerRef.current;
-        if (!el || loading) return;
+        if (!el || loading ) return;
 
         const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 100;
         if (nearBottom) {
             setLoading(true);
             try {
-                const data = await getRecommendation(sessionId);
-                setVideoIds(prev => [...prev, ...data.recommendations]); // append, not replace
+                const data = await recommend(sessionId);
+                setVideoIds(prev => [...prev, ...data.recommendations]);
             } finally {
                 setLoading(false);
             }
         }
     };
 
+
+    /* -------------------------
+          EFFECT FUNCTIONS
+    ------------------------- */
+
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
 
-        let timeout: number; // ✅ Use number, not NodeJS.Timeout
+        let timeout: number;
 
         const debouncedHandleScroll = () => {
             clearTimeout(timeout);
@@ -72,20 +65,23 @@ function App() {
     }, [loading, sessionId]);
 
 
+    // initial fetch of recommendations after session has been established
     useEffect(() => {
-
-        if (!sessionId || initialLoadDone.current) return;
-
+        if (!sessionId || !preferences || initialLoadDone.current) return;
         {
-            getRecommendation(sessionId).then((data) => {setVideoIds(data.recommendations)})
+            recommend(sessionId).then((data) => {setVideoIds(data.recommendations)})
             initialLoadDone.current = true;
         }
-
     }, [sessionId]);
 
+    /* -------------------------
+          PRERENDER LOGIC
+    ------------------------- */
 
-    if (!sessionId) {
+    if (!sessionId && !preferences) {
         return <StartSessionModal onSessionStart={setSessionId} />
+    } else if (sessionId && !preferences) {
+        return <PreferenceModal onPrefSubmit={setPreferences} />
     }
 
     return (
