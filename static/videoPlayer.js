@@ -26,7 +26,7 @@ $(document).ready(() => {
         const $iframe = $("<iframe>")
         $iframe.attr("id", "player-"+id)
         $iframe.attr("type", "text/html")
-        $iframe.attr("src", `https://www.youtube.com/embed/${id}?rel=0&controls=0&playlist=${id}&loop=1&playsinline=1&enablejsapi=1&mute=1`)
+        $iframe.attr("src", `https://www.youtube-nocookie.com/embed/${id}?&rel=0&controls=0&playlist=${id}&loop=1&playsinline=1&enablejsapi=1&mute=1`)
         $iframe.attr("frameborder", "0")
         $iframe.attr("allow", "autoplay; encrypted-media; gyroscope; picture-in-picture")
 
