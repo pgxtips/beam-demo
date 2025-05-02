@@ -46,7 +46,6 @@ def get_session():
         assert status
         assert session_id
 
-        # Create a response object and set the cookie
         response = make_response(jsonify({
             "status": 200,
         }))
@@ -59,7 +58,43 @@ def get_session():
 
     except Exception as e:
         return jsonify({
+            "status": 500,
+            "status_msg": e 
+        })
+
+@APP_SERVER.route('/api/recommend')
+def get_recommendations():
+    try:
+        session_id = request.cookies.get("session_id", None) 
+        assert session_id
+
+        end_point = os.getenv("BEAM_HOST") + "/external/recommend"
+
+        postData = {
+            "session_id": session_id,
+        }
+
+        r = requests.post(url = end_point, data=postData)
+        data = r.json()
+        
+        print(data)
+
+        status = data["status"]
+        recs = data["recommendations"]
+
+        assert status
+        assert recs 
+
+        response = make_response(jsonify({
             "status": 200,
+            "recommendations": recs,
+        }))
+
+        return response
+
+    except Exception as e:
+        return jsonify({
+            "status": 500,
             "status_msg": e 
         })
 
@@ -99,7 +134,7 @@ def submit_preferences():
 
     except Exception as e:
         return jsonify({
-            "status": 200,
+            "status": 500,
             "status_msg": e 
         })
 
