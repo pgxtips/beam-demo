@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="/preferences.css">
+{% endblock %}
+
+{% block scripts %}
+<script src="/preferences.js"></script>
+{% endblock %}
+
+{% block content %}
+<h2>Select Preferences</h2>
+<p style="margin-bottom: 10px;">Select between 3 - 10 preference tags</p>
+
+<input
+  type="text"
+  placeholder="Search tags..."
+  id="tagSearchInput"
+  class="tagSearchInput"
+/>
+
+<div class="tagListContainer" id="tagList">
+  {% for tag in tags %}
+    <button class="tagButton" data-tag="{{ tag }}">{{ tag }}</button>
+  {% endfor %}
+</div>
+
+<div class="selectedTags">
+  <h4>Selected Tags:</h4>
+  <div class="selectedTagList" id="selectedTagsContainer"> </div>
+</div>
+
+<button id="submitBtn" class="submitButton" disabled>Submit</button>
+{% endblock %}
+
