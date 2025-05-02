@@ -4,15 +4,16 @@ $(document).ready(() => {
     const videoIds = ["NsMKvVdEPkw", "NBpI7KVW1IQ", "IInciWyU74U"];
     const $scrollContainer = $("#scrollContainer");
     
-    // Load the YouTube Iframe Player API asynchronously
+    // load the YouTube Iframe Player API asynchronously
     let tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     let firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     
-    // Create video frames
+    // create video frames
     videoIds.forEach((id) => {
         const $wrapper = $("<div>").addClass("videoFrameWrapper");
+        $wrapper.data("content-id", id)
         const $videoFrame = createVideoFrame(id);
         $wrapper.append($videoFrame);
         $scrollContainer.append($wrapper);
@@ -20,7 +21,6 @@ $(document).ready(() => {
     
     function createVideoFrame(id) {
         const $container = $("<div>").addClass("videoFrame");
-        $container.data("content-id", id)
 
         const $playerSect= $("<div>").addClass("playerSect");
         const $iframe = $("<iframe>")
@@ -72,7 +72,6 @@ $(document).ready(() => {
         return $container;
     }
     
-    // This function will be called automatically when YouTube API is ready
     window.onYouTubeIframeAPIReady = function() {
         console.log("YouTube API Ready");
         
@@ -86,42 +85,39 @@ $(document).ready(() => {
                 }
             });
         });
+
+
     };
     
     function onPlayerReady(event) {
-        // You can do something when a player is ready, e.g., log it
-        console.log(`Player ${event.target.getIframe().id} is ready.`);
-        //event.target.mute(); // Autoplay if desired
-        //event.target.playVideo(); // Autoplay if desired
+        let $wrapper = $(event.target.g).closest(".videoFrameWrapper")
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const id = $(entry.target).data("content-id");
+                const playerId = "player-" + id;
+                const player = players[playerId];
+
+                if (!player) return;
+
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+                    player.playVideo();
+                } else {
+                    player.pauseVideo();
+                }
+            });
+        }, {
+            root: document.querySelector("#scrollContainer"),
+            threshold: 0.5
+        });
+
+        // Attach observer to each video wrapper
+        observer.observe($wrapper[0]);
     }
     
     function onPlayerStateChange(event) {
-        // You can track the state changes of each player here
         let playerElementId = event.target.getIframe().id;
         let playerStatus = event.data;
-        console.log(`Player ${playerElementId} state changed to: ${playerStatus}`);
-        changeBorderColor(playerElementId, playerStatus);
+        //console.log(`Player ${playerElementId} state changed to: ${playerStatus}`);
     }
-    
-    function changeBorderColor(playerId, playerStatus) {
-        let color;
-        if (playerStatus == -1) {
-            color = "#37474F"; // unstarted = gray
-        } else if (playerStatus == 0) {
-            color = "#FFFF00"; // ended = yellow
-        } else if (playerStatus == 1) {
-            color = "#33691E"; // playing = green
-        } else if (playerStatus == 2) {
-            color = "#DD2C00"; // paused = red
-        } else if (playerStatus == 3) {
-            color = "#AA00FF"; // buffering = purple
-        } else if (playerStatus == 5) {
-            color = "#FF6D00"; // video cued = orange (fixed typo in hex code)
-        }
-        if (color) {
-            console.log("Setting border color for", playerId, "to", color);
-            $(`#${playerId}`).parent().css('border', `2px solid ${color}`);
-        }
-    }
-     
 });

@@ -11,7 +11,7 @@ html, body{
 
 #root {
     display: grid;
-    grid-template-rows: 2fr 15fr;
+    grid-template-rows:  fr 15fr;
     height: 100%;
     width: 100%;
 }
@@ -42,7 +42,9 @@ html, body{
 }
  
 .content {
-    padding: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 20px;
 }
 
 button {
