@@ -22,7 +22,7 @@ selection, video recommendations (assisted and random), and a feedback survey.
 
 ---
 
-## 🛠 Development
+## Development
 
 Install dependencies:
 
@@ -38,7 +38,7 @@ uv run dev.py
 
 ---
 
-## 📦 Production
+## Production
 
 Run with `gunicorn` behind `uv`:
 
@@ -73,7 +73,7 @@ docker run -p 8080:80 beam-demo
 Set it locally (e.g. in `.env`):
 
 ```bash
-export BEAM_HOST=http://localhost:6969
+BEAM_HOST=http://localhost:6969
 ```
 
 ---
