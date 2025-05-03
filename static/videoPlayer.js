@@ -3,34 +3,22 @@ var players = {};
 const COUNTDOWN_DURATION = 1 * 60; // 5 minutes in seconds
 const STORAGE_KEY = "countdownEndTime";
 
-function setCookie(cname, cvalue, exdays) {
-    const d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    let expires = "expires="+ d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
-
-function getCookie(cname) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for(let i = 0; i <ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-}
 
 async function recommend(){
     try{
         const res = await fetch("/api/recommend", { method: "GET" });
         const data = await res.json();
         return data.recommendations
+    } catch(e) {
+        console.log("error: ", e)
+    }
+}
+
+async function switchModel(){
+    try {
+        const res = await fetch("/api/switch_model", { method: "GET" });
+        const data = await res.json();
+        if (data.status == "200") window.location.reload()
     } catch(e) {
         console.log("error: ", e)
     }
@@ -233,11 +221,11 @@ $(document).ready(async() => {
 
         let interval = setInterval(updateDisplay, 1000);
 
-        $(document).on("click", "#movePhaseBtn", function() {
+        $(document).on("click", "#movePhaseBtn", async function() {
             setCookie("finalPhase", true, 1);
             endTime = createEndTime();
             interval = setInterval(updateDisplay, 1000);
-            window.location.reload()
+            await switchModel();
         });
 
     }

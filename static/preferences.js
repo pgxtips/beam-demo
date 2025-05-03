@@ -57,7 +57,6 @@ $(document).ready(() => {
 
 async function submitPrefs(tags){
     try {
-
         let session_id = getCookie("session_id")
         resetCookiesAndLocal()
 

@@ -139,6 +139,39 @@ def submit_preferences():
         })
 
 
+@APP_SERVER.route('/api/switch_model', methods=["get"])
+def switch_model():
+    try:
+        session_id = request.cookies.get("session_id", None) 
+        assert session_id
+
+        end_point = os.getenv("BEAM_HOST") + "/external/changeModel"
+
+        postData = {
+            "session_id": session_id,
+            "model": "none",
+        }
+
+        r = requests.post(url = end_point, data=postData)
+
+        res_data = r.json()
+        status = res_data["status"]
+        assert status == 200
+
+        # Create a response object and set the cookie
+        response = make_response(jsonify({
+            "status": 200,
+        }))
+
+        return response
+
+    except Exception as e:
+        return jsonify({
+            "status": 500,
+            "status_msg": e 
+        })
+
+
 """""""""""""""""
      ROUTES
 """""""""""""""""
@@ -155,7 +188,7 @@ def start():
     print(session_id)
     print(preferences)
 
-    if session_complete:
+    if session_complete and session_id:
         template = render_template("session_complete.html", sid=session_id) 
     elif (not session_id) and (not preferences): 
         template = render_template("session.html", sid=session_id) 
