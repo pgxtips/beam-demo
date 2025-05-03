@@ -12,7 +12,7 @@ html, body{
 
 #root {
     display: grid;
-    grid-template-rows:  fr 15fr;
+    grid-template-rows: 1fr 15fr;
     height: 100%;
     width: 100%;
 }

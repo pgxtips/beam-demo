@@ -56,7 +56,13 @@ $(document).ready(() => {
 });
 
 async function submitPrefs(tags){
-    try{
+    try {
+
+        let session_id = getCookie("session_id")
+        resetCookiesAndLocal()
+
+        setCookie("session_id", session_id)
+
         const tagsArray = Array.from(tags);
 
         let fd = new FormData()
