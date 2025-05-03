@@ -1,6 +1,6 @@
 var players = {};
 
-const COUNTDOWN_DURATION = 1 * 60; // 5 minutes in seconds
+const COUNTDOWN_DURATION = 5 * 60; // 5 minutes in seconds
 const STORAGE_KEY = "countdownEndTime";
 
 
@@ -19,6 +19,40 @@ async function switchModel(){
         const res = await fetch("/api/switch_model", { method: "GET" });
         const data = await res.json();
         if (data.status == "200") window.location.reload()
+    } catch(e) {
+        console.log("error: ", e)
+    }
+}
+
+async function like_content(content_id){
+    try {
+        let fd = new FormData()
+        fd.append("content_id", content_id)
+
+        const res = await fetch("/api/like", { method: "POST", body: fd });
+        const data = await res.json();
+
+        if (data.status != "200") {
+            throw new Error("Bad Request")
+        } 
+
+    } catch(e) {
+        console.log("error: ", e)
+    }
+}
+
+async function dislike_content(content_id){
+    try {
+        let fd = new FormData()
+        fd.append("content_id", content_id)
+
+        const res = await fetch("/api/dislike", { method: "POST", body: fd });
+        const data = await res.json();
+
+        if (data.status != "200") {
+            throw new Error("Bad Request")
+        } 
+
     } catch(e) {
         console.log("error: ", e)
     }
@@ -108,6 +142,44 @@ $(document).ready(async() => {
                     $btn.addClass("fa-volume-xmark")
                     player.mute()
                 }
+            })
+
+            $($controlsSect).on("click", ".likeBtn", async function(){
+                $wrapper= $(this).parent()
+
+                $likebtn = $wrapper.find(".likeBtn")
+                $dislikebtn = $wrapper.find(".dislikeBtn")
+
+                let isLiked = $likebtn.hasClass("likeToggle") 
+
+                if (isLiked) { 
+                    $likebtn.removeClass("likeToggle") 
+                }
+                else { 
+                    $likebtn.addClass("likeToggle") 
+                    $dislikebtn.removeClass("dislikeToggle")
+                }
+
+                await like_content(id)
+            })
+
+            $($controlsSect).on("click", ".dislikeBtn", async function(){
+                $wrapper= $(this).parent()
+
+                $likebtn = $wrapper.find(".likeBtn")
+                $dislikebtn = $wrapper.find(".dislikeBtn")
+
+                let isLiked = $likebtn.hasClass("likeToggle") 
+
+                if (isLiked) { 
+                    $likebtn.removeClass("likeToggle") 
+                    $dislikebtn.addClass("dislikeToggle") 
+                }
+                else { 
+                    $dislikebtn.addClass("dislikeToggle") 
+                }
+
+                await dislike_content(id)
             })
 
             $container.append($playerSect);
