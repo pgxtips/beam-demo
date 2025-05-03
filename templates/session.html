@@ -7,7 +7,28 @@
 
 {% block content %}
 <h2>Start your session</h2>
-<button onClick="getSession()">Start</button>
+
+<div style="margin-top: 1em; padding: 1em; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9;">
+  <p>
+    In this demo, you'll begin by selecting <strong>3 to 10 preferences</strong>.
+    After that, you'll watch a series of videos and choose whether to <strong>like or dislike</strong> each one.
+    You're not required to watch every video in full.
+  </p>
+  <p>
+    The video section is split into two phases:
+  </p>
+  <ul style="margin-left: 1.5em;">
+    <li><strong>Phase 1:</strong> Videos recommended by our engine</li>
+    <li><strong>Phase 2:</strong> Randomly selected videos</li>
+  </ul>
+  <p>
+    Each phase lasts <strong>5 minutes</strong>. Afterward, you'll be asked to complete a short survey about your experience.
+  </p>
+  <p><em>Estimated total time: 15–20 minutes</em></p>
+</div>
+
+
+<button style="margin-top: 1em;" onClick="getSession()">Start</button>
 {% endblock %}
 
 
