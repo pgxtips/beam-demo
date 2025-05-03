@@ -11,6 +11,20 @@
 
 {% block content %}
 <div id="scrollContainer" class="scrollContainer"></div>
+
+<div id="movePhaseModal" class="modal-overlay hidden">
+  <div class="modal">
+    <h2>Continue to Final Phase?</h2>
+    <p>
+        This will begin the final countdown phase where you will be
+        recommended videos without using the recommendation engine. 
+        Do you want to continue?
+    </p>
+    <div class="modal-buttons">
+      <button id="movePhaseBtn" class="confirm">Continue</button>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 

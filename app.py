@@ -148,12 +148,16 @@ def start():
 
     session_id = request.cookies.get("session_id", None) 
     preferences_raw = request.cookies.get("preferences", None)
+    session_complete = request.cookies.get("sessionComplete", None)
+
     preferences = preferences_raw.split(",") if preferences_raw else None
 
     print(session_id)
     print(preferences)
 
-    if (not session_id) and (not preferences): 
+    if session_complete:
+        template = render_template("session_complete.html", sid=session_id) 
+    elif (not session_id) and (not preferences): 
         template = render_template("session.html", sid=session_id) 
     elif (session_id) and (not preferences): 
         tags = ["AI", "Music", "Gaming", "Science", "Design", "Health", "Fitness", "Photography"]

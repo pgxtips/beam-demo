@@ -1,5 +1,31 @@
 var players = {};
 
+const COUNTDOWN_DURATION = 1 * 60; // 5 minutes in seconds
+const STORAGE_KEY = "countdownEndTime";
+
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    let expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
 async function recommend(){
     try{
         const res = await fetch("/api/recommend", { method: "GET" });
@@ -11,6 +37,7 @@ async function recommend(){
 }
 
 $(document).ready(async() => {
+
     var videoIds = []
     var endObserver; 
     const $scrollContainer = $("#scrollContainer");
@@ -165,4 +192,56 @@ $(document).ready(async() => {
 
         init()
     }
+
+    function startOrResumeCountdown() {
+        const $timer = $("#timer");
+
+        function getEndTime() {
+            let endT = localStorage.getItem(STORAGE_KEY);
+            return endT ? parseInt(endT) : null;
+        }
+
+        function createEndTime() {
+            const newEndT = Date.now() + COUNTDOWN_DURATION * 1000;
+            localStorage.setItem(STORAGE_KEY, newEndT);
+            return newEndT;
+        }
+
+        let endTime = getEndTime() ?? createEndTime();
+
+        function updateDisplay() {
+            const now = Date.now();
+            let remaining = Math.max(0, Math.floor((endTime - now) / 1000));
+
+            const minutes = Math.floor(remaining / 60).toString().padStart(2, '0');
+            const seconds = (remaining % 60).toString().padStart(2, '0');
+            $timer.text(`${minutes}:${seconds}`);
+
+            if (remaining <= 0) {
+                clearInterval(interval);
+                $timer.text("00:00");
+
+                let finalPhase = getCookie("finalPhase");
+                if (!finalPhase) {
+                    $("#movePhaseModal").removeClass("hidden")
+                } else {
+                    setCookie("sessionComplete", true, 1);
+                    window.location.reload()
+                }
+            }
+        }
+
+        let interval = setInterval(updateDisplay, 1000);
+
+        $(document).on("click", "#movePhaseBtn", function() {
+            setCookie("finalPhase", true, 1);
+            endTime = createEndTime();
+            interval = setInterval(updateDisplay, 1000);
+            window.location.reload()
+        });
+
+    }
+
+    startOrResumeCountdown();
+
 });
